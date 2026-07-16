@@ -1,0 +1,86 @@
+[
+  {
+    "name": "Halter",
+    "ats": "ashby",
+    "slug": "halter",
+    "note": "AgriTech / Auckland"
+  },
+  {
+    "name": "Partly",
+    "ats": "ashby",
+    "slug": "partly.com",
+    "note": "Automotive parts data / Christchurch + remote"
+  },
+  {
+    "name": "Sharesies",
+    "ats": "workable",
+    "slug": "sharesies",
+    "note": "Investing platform / Wellington"
+  },
+  {
+    "name": "Education Perfect",
+    "ats": "workable",
+    "slug": "education-perfect",
+    "note": "EdTech / Dunedin"
+  },
+  {
+    "name": "Parrot Analytics",
+    "ats": "workable",
+    "slug": "parrot-analytics-4",
+    "note": "Content demand analytics / Auckland"
+  },
+  {
+    "name": "Soul Machines",
+    "ats": "workable",
+    "slug": "soul-machines-ltd",
+    "note": "Digital humans / AI avatars / Auckland"
+  },
+  {
+    "name": "Karbon",
+    "ats": "greenhouse",
+    "slug": "karbon",
+    "note": "Accounting practice management / Wellington"
+  },
+  {
+    "name": "Cin7",
+    "ats": "lever",
+    "slug": "cin7",
+    "note": "Inventory management software / Auckland"
+  },
+  {
+    "name": "Kami",
+    "ats": "bamboohr",
+    "slug": "kami",
+    "note": "EdTech (PDF annotation) / Auckland"
+  },
+  {
+    "name": "Pushpay",
+    "ats": "greenhouse",
+    "slug": "pushpay",
+    "note": "Donor management / church giving platform / Auckland"
+  },
+  {
+    "name": "Serko",
+    "ats": "workable",
+    "slug": "serko-ltd",
+    "note": "Corporate travel & expense software / Wellington"
+  },
+  {
+    "name": "Theta",
+    "ats": "workable",
+    "slug": "theta-systems-ltd",
+    "note": "Software & AI consultancy / Auckland"
+  },
+  {
+    "name": "Laybuy",
+    "ats": "workable",
+    "slug": "laybuy",
+    "note": "Buy now, pay later / Auckland"
+  },
+  {
+    "name": "Orion Health",
+    "ats": "workable",
+    "slug": "orion-health",
+    "note": "Healthcare IT / Auckland"
+  }
+]

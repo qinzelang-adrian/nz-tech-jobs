@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NZ Tech Departures — Job Board</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">✈</span>
+      <div>
+        <h1>NZ TECH DEPARTURES</h1>
+        <p class="subtitle">NZ tech companies · job board</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <img class="nz-flag" src="{{ url_for('static', filename='nz-flag.svg') }}" alt="New Zealand flag">
+      <div class="clock" id="clock">--:--:--</div>
+    </div>
+  </header>
+
+  <section class="desk">
+    <div class="field">
+      <label for="q">Search</label>
+      <input type="text" id="q" placeholder="Title / location / department keywords…">
+    </div>
+
+    <div class="field">
+      <label for="company">Company</label>
+      <select id="company">
+        <option value="">All companies</option>
+      </select>
+    </div>
+
+    <div class="field checkbox-field">
+      <label class="switch">
+        <input type="checkbox" id="internOnly">
+        <span class="slider"></span>
+      </label>
+      <label for="internOnly" class="switch-label">Internship / graduate only</label>
+    </div>
+
+    <div class="field checkbox-field">
+      <label class="switch">
+        <input type="checkbox" id="nzOnly" checked>
+        <span class="slider"></span>
+      </label>
+      <label for="nzOnly" class="switch-label">NZ jobs only</label>
+    </div>
+
+    <div class="field">
+      <label for="sort">Sort</label>
+      <select id="sort">
+        <option value="posted_desc">Newest first</option>
+        <option value="posted_asc">Oldest first</option>
+        <option value="company">By company</option>
+      </select>
+    </div>
+
+    <button id="refreshBtn" class="refresh-btn">
+      <span class="refresh-icon">⟳</span> Refresh job data
+    </button>
+  </section>
+
+  <div id="refreshStatus" class="refresh-status"></div>
+
+  <main class="board-wrap">
+    <div class="board-header">
+      <span class="col col-status">Status</span>
+      <span class="col col-company">Company</span>
+      <span class="col col-role">Role</span>
+      <span class="col col-location">Location</span>
+      <span class="col col-time">Posted</span>
+      <span class="col col-applied">Applied</span>
+      <span class="col col-action"></span>
+    </div>
+    <div id="board" class="board"></div>
+    <div id="emptyState" class="empty-state" hidden>
+      <p>No matching jobs right now.</p>
+      <p class="empty-hint">Try clearing your filters, or click "Refresh job data" above to re-fetch.</p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <span id="lastRefresh">No data fetched yet — click the button above to start</span>
+    <span class="footer-sep">·</span>
+    <span>Data source: each company's ATS public API (Greenhouse / Lever / Ashby / Workable / BambooHR)</span>
+  </footer>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -128,3 +128,7 @@ The process itself is good job-search research.
 Python + Flask + SQLite + APScheduler (background auto-refresh) + vanilla
 HTML/CSS/JS frontend (no frontend framework, kept simple and
 straightforward so every line is easy to explain in an interview).
+
+## License
+
+[MIT](LICENSE)

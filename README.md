@@ -2,7 +2,7 @@
 
 ![Tests](https://github.com/qinzelang-adrian/nz-tech-jobs/actions/workflows/tests.yml/badge.svg)
 
-**[Live demo](https://web-production-77eda.up.railway.app/)**
+**[Live demo](https://nz-tech-departures.up.railway.app/)**
 
 ![NZ Tech Departures screenshot](static/screenshot.png)
 

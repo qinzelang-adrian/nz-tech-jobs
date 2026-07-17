@@ -30,6 +30,31 @@ set `FLASK_DEBUG=1` if you want it while developing. Leave it off if you
 ever expose this beyond localhost — the debugger allows arbitrary code
 execution to anyone who can reach it.
 
+## Deployment
+
+The app is ready to run behind a production WSGI server (`Procfile` +
+`gunicorn`, already in `requirements.txt`) instead of Flask's built-in dev
+server. To deploy on [Railway](https://railway.app):
+
+1. Sign in to Railway with your GitHub account and create a new project
+   from this repo.
+2. Railway auto-detects the Python app and reads `Procfile` for the start
+   command (`gunicorn app:app --workers 1 --bind 0.0.0.0:$PORT`) — no extra
+   config needed. Keep it at **1 worker**: each worker process starts its
+   own copy of the background scheduler, so more than one would trigger
+   duplicate refreshes.
+3. Optionally set the `REFRESH_INTERVAL_MINUTES` environment variable to
+   override the default 60-minute auto-refresh.
+4. Once deployed, Railway gives you a public URL — that's your live demo
+   link.
+
+Note: `data/jobs.db` (SQLite) lives on the container's local disk, which
+Railway's free tier does not persist across redeploys — a fresh deploy
+starts with an empty database until the next auto-refresh repopulates it.
+That's fine for a demo; for anything longer-lived, attach a
+[Railway volume](https://docs.railway.app/reference/volumes) mounted at
+`data/`.
+
 ## Project structure
 
 ```
@@ -119,9 +144,6 @@ The process itself is good job-search research.
 - **Email/Telegram notifications**: get notified automatically when a new
   job appears (the `first_seen_at` tracking and scheduled refresh are
   already there — this would hook into that instead of re-fetching)
-- **Deployment**: ship it to Railway / Render / Fly.io so you can just send
-  interviewers a link instead of asking them to run it locally, and so the
-  scheduled refresh keeps running while your laptop is off
 - **Unit tests**: write a few tests for the parsing logic in `fetchers.py`
   (can use recorded JSON fixtures as mocks) to show engineering rigor
 

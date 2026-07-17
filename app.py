@@ -127,10 +127,14 @@ def api_status():
     })
 
 
+# Runs at import time (not just under `python app.py`) so the scheduler also
+# starts when a production WSGI server like gunicorn imports this module
+# directly. Flask's reloader (debug=True) re-executes this module in a child
+# process; only that child sets WERKZEUG_RUN_MAIN, so this guard keeps the
+# scheduler from starting twice. Under gunicorn, run with a single worker —
+# each worker process would otherwise start its own duplicate scheduler.
+if not DEBUG or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+    start_scheduler()
+
 if __name__ == "__main__":
-    # Flask's reloader (debug=True) re-executes this module in a child
-    # process; only that child sets WERKZEUG_RUN_MAIN, so this guard keeps
-    # the scheduler from starting twice.
-    if not DEBUG or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-        start_scheduler()
-    app.run(debug=DEBUG, port=5050)
+    app.run(debug=DEBUG, port=int(os.environ.get("PORT", 5050)))

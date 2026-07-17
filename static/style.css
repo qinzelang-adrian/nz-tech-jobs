@@ -175,7 +175,10 @@ body {
 .refresh-status.error { color: var(--danger); }
 
 /* ---------- Board ---------- */
-.board-wrap { padding: 10px 36px 24px; }
+.board-wrap {
+  padding: 10px 36px 24px;
+  overflow-x: auto; /* safety net if a single column's content can't shrink enough */
+}
 
 .board-header {
   display: grid;
@@ -298,13 +301,10 @@ body {
 }
 .footer-sep { margin: 0 10px; }
 
-/* ---------- Mobile ---------- */
-@media (max-width: 760px) {
-  .topbar { flex-direction: column; align-items: flex-start; gap: 12px; }
-  .desk { flex-direction: column; align-items: stretch; }
-  .field input, .field select { min-width: 0; width: 100%; }
-  .refresh-btn { margin-left: 0; justify-content: center; }
-
+/* ---------- Tablet: the fixed-width grid columns need ~1150px to lay out
+   without squeezing the role column into single-word-per-line wrapping, so
+   the stacked card layout takes over earlier than the topbar/desk switch. ---------- */
+@media (max-width: 1150px) {
   .board-header { display: none; }
 
   .job-row {
@@ -313,4 +313,12 @@ body {
     padding: 14px;
   }
   .job-apply { justify-self: start; margin-top: 6px; }
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 760px) {
+  .topbar { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .desk { flex-direction: column; align-items: stretch; }
+  .field input, .field select { min-width: 0; width: 100%; }
+  .refresh-btn { margin-left: 0; justify-content: center; }
 }

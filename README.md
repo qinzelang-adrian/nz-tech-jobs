@@ -1,5 +1,7 @@
 # NZ Tech Departures 🛫
 
+![NZ Tech Departures screenshot](static/screenshot.png)
+
 A job board that aggregates open roles from New Zealand tech companies, with
 a one-click filter for internship / graduate positions. Data comes straight
 from each company's applicant tracking system (ATS) **public JSON API** (not

@@ -1,5 +1,7 @@
 # NZ Tech Departures 🛫
 
+**[Live demo](https://web-production-77eda.up.railway.app/)**
+
 ![NZ Tech Departures screenshot](static/screenshot.png)
 
 A job board that aggregates open roles from New Zealand tech companies, with

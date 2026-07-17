@@ -1,0 +1,29 @@
+{
+  "jobs": [
+    {
+      "shortcode": "ABC123",
+      "title": "Product Engineer",
+      "location": {"location_str": "Auckland, New Zealand"},
+      "department": "Engineering",
+      "url": "https://apply.workable.com/example/j/ABC123/",
+      "published_on": "2026-06-10"
+    },
+    {
+      "shortcode": "ABC123",
+      "title": "Product Engineer",
+      "location": {"location_str": "Christchurch, New Zealand"},
+      "department": "Engineering",
+      "url": "https://apply.workable.com/example/j/ABC123/2/",
+      "published_on": "2026-06-10"
+    },
+    {
+      "shortcode": "XYZ999",
+      "title": "Data Scientist",
+      "city": "Wellington",
+      "country": "New Zealand",
+      "department": "Data",
+      "shortlink": "https://apply.workable.com/example/j/XYZ999/",
+      "created_at": "2026-06-05"
+    }
+  ]
+}

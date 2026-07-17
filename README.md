@@ -1,5 +1,7 @@
 # NZ Tech Departures 🛫
 
+![Tests](https://github.com/qinzelang-adrian/nz-tech-jobs/actions/workflows/tests.yml/badge.svg)
+
 **[Live demo](https://web-production-77eda.up.railway.app/)**
 
 ![NZ Tech Departures screenshot](static/screenshot.png)
@@ -57,6 +59,19 @@ That's fine for a demo; for anything longer-lived, attach a
 [Railway volume](https://docs.railway.app/reference/volumes) mounted at
 `data/`.
 
+## Testing
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
+
+Unit tests cover the per-ATS parsing logic in `fetchers.py` (using recorded
+JSON fixtures under `tests/fixtures/` instead of hitting real APIs) and the
+SQLite storage logic in `db.py` (LIKE-wildcard escaping, `first_seen_at`
+preservation across refreshes, stale-job cleanup). They run on every push
+via [GitHub Actions](.github/workflows/tests.yml).
+
 ## Project structure
 
 ```
@@ -66,7 +81,8 @@ That's fine for a demo; for anything longer-lived, attach a
 ├── companies.json     # Company list config (the main extensibility point, see below)
 ├── find_slug.py        # CLI tool: paste a careers page URL, auto-detect ATS type and slug
 ├── templates/index.html
-└── static/style.css, script.js   # Frontend board (departures-board style)
+├── static/style.css, script.js   # Frontend board (departures-board style)
+└── tests/              # pytest suite for fetchers.py and db.py
 ```
 
 ## Companies currently included
@@ -146,8 +162,6 @@ The process itself is good job-search research.
 - **Email/Telegram notifications**: get notified automatically when a new
   job appears (the `first_seen_at` tracking and scheduled refresh are
   already there — this would hook into that instead of re-fetching)
-- **Unit tests**: write a few tests for the parsing logic in `fetchers.py`
-  (can use recorded JSON fixtures as mocks) to show engineering rigor
 
 ## Tech stack
 

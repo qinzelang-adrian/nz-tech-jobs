@@ -1,0 +1,16 @@
+[
+  {
+    "id": "aa11",
+    "text": "Graduate Software Engineer",
+    "categories": {"location": "Wellington, New Zealand", "team": "Engineering"},
+    "hostedUrl": "https://jobs.lever.co/example/aa11",
+    "createdAt": 1780300800000
+  },
+  {
+    "id": "bb22",
+    "text": "Head of Sales",
+    "categories": {"location": "Melbourne, Australia", "department": "Sales"},
+    "hostedUrl": "https://jobs.lever.co/example/bb22",
+    "createdAt": 1780128000000
+  }
+]

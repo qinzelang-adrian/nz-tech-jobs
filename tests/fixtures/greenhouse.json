@@ -1,0 +1,20 @@
+{
+  "jobs": [
+    {
+      "id": 1234,
+      "title": "Software Engineer Intern",
+      "location": {"name": "Auckland, New Zealand"},
+      "absolute_url": "https://boards.greenhouse.io/example/jobs/1234",
+      "first_published": "2026-06-01T00:00:00Z",
+      "updated_at": "2026-06-02T00:00:00Z"
+    },
+    {
+      "id": 5678,
+      "title": "Senior Backend Engineer",
+      "location": {"name": "Sydney, Australia"},
+      "absolute_url": "https://boards.greenhouse.io/example/jobs/5678",
+      "first_published": null,
+      "updated_at": "2026-05-20T00:00:00Z"
+    }
+  ]
+}

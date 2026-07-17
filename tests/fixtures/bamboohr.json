@@ -1,0 +1,18 @@
+{
+  "result": [
+    {
+      "id": 42,
+      "jobOpeningName": "Marketing Intern",
+      "departmentLabel": "Marketing",
+      "location": {"city": "Auckland"},
+      "atsLocation": {}
+    },
+    {
+      "id": 43,
+      "jobOpeningName": "Support Engineer",
+      "departmentLabel": "Support",
+      "location": {},
+      "atsLocation": {"city": "Wellington", "state": "", "country": "New Zealand"}
+    }
+  ]
+}

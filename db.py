@@ -10,7 +10,10 @@ DB_PATH = Path(__file__).parent / "data" / "jobs.db"
 
 
 def get_conn():
-    conn = sqlite3.connect(DB_PATH)
+    # timeout=30 sets SQLite's busy-wait: if the background refresh's writer
+    # transaction is mid-commit, a concurrent request-thread write waits up to
+    # 30s for the lock instead of failing immediately with "database is locked".
+    conn = sqlite3.connect(DB_PATH, timeout=30)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -18,6 +21,10 @@ def get_conn():
 def init_db():
     DB_PATH.parent.mkdir(exist_ok=True)
     with closing(get_conn()) as conn:
+        # WAL lets readers (e.g. /api/jobs) run concurrently with the writer
+        # (refresh) instead of blocking on each other; it's a one-time,
+        # persistent setting stored in the db file, not per-connection.
+        conn.execute("PRAGMA journal_mode=WAL")
         conn.execute("""
             CREATE TABLE IF NOT EXISTS jobs (
                 id TEXT PRIMARY KEY,

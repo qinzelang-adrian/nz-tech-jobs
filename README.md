@@ -43,12 +43,18 @@ server. To deploy on [Railway](https://railway.app):
 1. Sign in to Railway with your GitHub account and create a new project
    from this repo.
 2. Railway auto-detects the Python app and reads `Procfile` for the start
-   command (`gunicorn app:app --workers 1 --bind 0.0.0.0:$PORT`) — no extra
-   config needed. Keep it at **1 worker**: each worker process starts its
-   own copy of the background scheduler, so more than one would trigger
-   duplicate refreshes.
-3. Optionally set the `REFRESH_INTERVAL_MINUTES` environment variable to
-   override the default 60-minute auto-refresh.
+   command (`gunicorn app:app --workers 1 --threads 4 --bind 0.0.0.0:$PORT`)
+   — no extra config needed. Keep it at **1 worker**: each worker process
+   starts its own copy of the background scheduler, so more than one would
+   trigger duplicate refreshes. The extra threads just let the single worker
+   keep serving other requests (health checks included) while a refresh is
+   in flight.
+3. Optional environment variables:
+   - `REFRESH_INTERVAL_MINUTES` — override the default 60-minute auto-refresh.
+   - `REFRESH_TOKEN` — if set, `POST /api/refresh` requires a matching
+     `X-Refresh-Token` header. Left unset, that endpoint stays open to
+     anyone who can reach the site (fine for a low-traffic demo; a cooldown
+     and in-progress guard already stop it from being spammed either way).
 4. Once deployed, Railway gives you a public URL — that's your live demo
    link.
 
@@ -67,10 +73,18 @@ pytest
 ```
 
 Unit tests cover the per-ATS parsing logic in `fetchers.py` (using recorded
-JSON fixtures under `tests/fixtures/` instead of hitting real APIs) and the
+JSON fixtures under `tests/fixtures/` instead of hitting real APIs), the
 SQLite storage logic in `db.py` (LIKE-wildcard escaping, `first_seen_at`
-preservation across refreshes, stale-job cleanup). They run on every push
-via [GitHub Actions](.github/workflows/tests.yml).
+preservation across refreshes, stale-job cleanup), and `app.py`'s refresh
+orchestration and `/api/refresh` route (company list and ATS calls are
+stubbed out, so these don't hit real APIs or the network either). They run
+on every push via [GitHub Actions](.github/workflows/tests.yml).
+
+`app.py` starts its background scheduler as soon as it's imported (so it
+also runs under a production WSGI server, not just `python app.py`); the
+test suite sets `DISABLE_SCHEDULER=1` (see `tests/conftest.py`) before
+importing it so `pytest` doesn't kick off a real scheduled refresh in the
+background every run.
 
 ## Project structure
 
@@ -82,7 +96,7 @@ via [GitHub Actions](.github/workflows/tests.yml).
 ├── find_slug.py        # CLI tool: paste a careers page URL, auto-detect ATS type and slug
 ├── templates/index.html
 ├── static/style.css, script.js   # Frontend board (departures-board style)
-└── tests/              # pytest suite for fetchers.py and db.py
+└── tests/              # pytest suite for fetchers.py, db.py, and app.py
 ```
 
 ## Companies currently included
@@ -145,7 +159,11 @@ The process itself is good job-search research.
   every company in real time, and automatically flag jobs that have been
   taken down (they get cleaned out of the database)
 - **Failure isolation**: if one company's API is down, it won't affect the
-  results from the others — the error is shown in the refresh status bar
+  results from the others — the error is shown in the refresh status bar. A
+  company that responds successfully but with an unexpectedly empty list
+  (rather than an HTTP error) is treated the same way: its existing listings
+  are left alone instead of being wiped, in case it was just a transient
+  glitch upstream
 - **Scheduled auto-refresh**: an APScheduler background job re-fetches every
   company on an interval (default 60 min, override with the
   `REFRESH_INTERVAL_MINUTES` env var), so listings stay current even if you

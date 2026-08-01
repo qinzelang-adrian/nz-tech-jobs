@@ -186,7 +186,10 @@ def api_status():
 _is_dev_reloader_parent = (
     __name__ == "__main__" and DEBUG and os.environ.get("WERKZEUG_RUN_MAIN") != "true"
 )
-if not _is_dev_reloader_parent:
+# DISABLE_SCHEDULER lets the test suite import this module (to exercise
+# run_refresh() and the Flask routes directly) without a real network-hitting
+# refresh firing in the background the moment it's imported.
+if not _is_dev_reloader_parent and os.environ.get("DISABLE_SCHEDULER") != "1":
     start_scheduler()
 
 if __name__ == "__main__":

@@ -82,5 +82,65 @@
     "ats": "workable",
     "slug": "orion-health",
     "note": "Healthcare IT / Auckland"
+  },
+  {
+    "name": "Tracksuit",
+    "ats": "lever",
+    "slug": "tracksuit-limited",
+    "note": "Brand tracking SaaS / Auckland + Wellington"
+  },
+  {
+    "name": "Re-Leased",
+    "ats": "greenhouse",
+    "slug": "released",
+    "note": "Cloud property management software / Auckland"
+  },
+  {
+    "name": "Marsello",
+    "ats": "bamboohr",
+    "slug": "marsello",
+    "note": "Retail marketing & loyalty software / Wellington"
+  },
+  {
+    "name": "Gentrack",
+    "ats": "bamboohr",
+    "slug": "gentrack",
+    "note": "Utility & airport billing software / Auckland (NZX-listed)"
+  },
+  {
+    "name": "Vista Group",
+    "ats": "workable",
+    "slug": "vista-group",
+    "note": "Cinema & entertainment software / Auckland (NZX-listed)"
+  },
+  {
+    "name": "Fingermark",
+    "ats": "bamboohr",
+    "slug": "fingermark",
+    "note": "Computer vision / AI for drive-thru & retail / Hamilton"
+  },
+  {
+    "name": "Dawn Aerospace",
+    "ats": "greenhouse",
+    "slug": "dawnaerospace",
+    "note": "Aerospace / spaceplane propulsion / Christchurch"
+  },
+  {
+    "name": "90 Seconds",
+    "ats": "lever",
+    "slug": "90seconds",
+    "note": "Video production platform / Auckland"
+  },
+  {
+    "name": "Ubco",
+    "ats": "bamboohr",
+    "slug": "ubco",
+    "note": "Electric utility bikes / Mount Maunganui"
+  },
+  {
+    "name": "Jade Software",
+    "ats": "bamboohr",
+    "slug": "jadeworld",
+    "note": "Enterprise software consultancy / Christchurch"
   }
 ]

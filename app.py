@@ -173,7 +173,14 @@ def api_status():
 # Runs at import time (not just under `python app.py`) so the scheduler also
 # starts when a production WSGI server like gunicorn imports this module
 # directly. Under gunicorn, run with a single worker — each worker process
-# would otherwise start its own duplicate scheduler.
+# would otherwise start its own duplicate scheduler. Run it *without*
+# --preload too: preloading imports this module in the gunicorn master before
+# it forks, so the scheduler would start in the master, and its thread would
+# not survive the fork into the worker. The worker's scheduler would then look
+# running while never firing, and the master's copy would run refreshes from a
+# different process than the one serving POST /api/refresh, so _refresh_lock
+# would no longer keep the two off SQLite at the same time. (Render's Python
+# runtime enables --preload by default; render.yaml overrides that.)
 #
 # Flask's own dev-server reloader (debug=True, only reachable by running
 # `python app.py` directly) re-executes this module in a child process; only

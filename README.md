@@ -2,7 +2,7 @@
 
 ![Tests](https://github.com/qinzelang-adrian/nz-tech-jobs/actions/workflows/tests.yml/badge.svg)
 
-**[Live demo](https://nz-tech-departures.up.railway.app/)**
+**[Live demo](https://nz-tech-departures.onrender.com/)**
 
 ![NZ Tech Departures screenshot](static/screenshot.png)
 
@@ -36,34 +36,70 @@ execution to anyone who can reach it.
 
 ## Deployment
 
-The app is ready to run behind a production WSGI server (`Procfile` +
-`gunicorn`, already in `requirements.txt`) instead of Flask's built-in dev
-server. To deploy on [Railway](https://railway.app):
+The app is ready to run behind a production WSGI server (`gunicorn`, already
+in `requirements.txt`) instead of Flask's built-in dev server. It deploys to
+[Render](https://render.com) from the `render.yaml` Blueprint in this repo:
 
-1. Sign in to Railway with your GitHub account and create a new project
-   from this repo.
-2. Railway auto-detects the Python app and reads `Procfile` for the start
-   command (`gunicorn app:app --workers 1 --threads 4 --bind 0.0.0.0:$PORT`)
-   — no extra config needed. Keep it at **1 worker**: each worker process
-   starts its own copy of the background scheduler, so more than one would
-   trigger duplicate refreshes. The extra threads just let the single worker
-   keep serving other requests (health checks included) while a refresh is
-   in flight.
-3. Optional environment variables:
-   - `REFRESH_INTERVAL_MINUTES` — override the default 60-minute auto-refresh.
-   - `REFRESH_TOKEN` — if set, `POST /api/refresh` requires a matching
-     `X-Refresh-Token` header. Left unset, that endpoint stays open to
-     anyone who can reach the site (fine for a low-traffic demo; a cooldown
-     and in-progress guard already stop it from being spammed either way).
-4. Once deployed, Railway gives you a public URL — that's your live demo
-   link.
+1. Sign in to Render with your GitHub account.
+2. In the Render Dashboard, click **New → Blueprint** and pick this repo.
+   Render reads `render.yaml` and creates a free web service with the build
+   command, start command, region, health check, and environment variables
+   already filled in — there's nothing to configure by hand.
+3. Render prompts for `REFRESH_TOKEN` during the sync. Leave it blank unless
+   you want to lock down the refresh endpoint (see below).
+4. Once the first deploy finishes, Render gives you a public
+   `*.onrender.com` URL — that's your live demo link.
 
-Note: `data/jobs.db` (SQLite) lives on the container's local disk, which
-Railway's free tier does not persist across redeploys — a fresh deploy
-starts with an empty database until the next auto-refresh repopulates it.
-That's fine for a demo; for anything longer-lived, attach a
-[Railway volume](https://docs.railway.app/reference/volumes) mounted at
-`data/`.
+Prefer clicking through the dashboard instead? Choose **New → Web Service**,
+pick the repo, and set: runtime **Python 3**, build command
+`pip install -r requirements.txt`, start command
+`gunicorn app:app --workers 1 --threads 4 --bind 0.0.0.0:$PORT`. Keep it at
+**1 worker** — each worker process starts its own copy of the background
+scheduler, so more than one would trigger duplicate refreshes. The extra
+threads just let the single worker keep serving other requests (health checks
+included) while a refresh is in flight.
+
+### Environment variables
+
+- `REFRESH_INTERVAL_MINUTES` — override the default 60-minute auto-refresh.
+- `REFRESH_TOKEN` — if set, `POST /api/refresh` requires a matching
+  `X-Refresh-Token` header. Left unset, that endpoint stays open to anyone
+  who can reach the site (fine for a low-traffic demo; a cooldown and
+  in-progress guard already stop it from being spammed either way).
+- `GUNICORN_CMD_ARGS` — set to `--access-logfile -` by `render.yaml`, and
+  you should keep it that way. Render's Python runtime otherwise defaults it
+  to `--preload ...`, and `--preload` makes gunicorn import `app.py` in the
+  master process *before* forking the worker, which starts the scheduler in
+  the master. Threads don't survive `fork()`, so the worker ends up with a
+  scheduler that reports itself running but never fires, while the master's
+  copy runs refreshes from a different process than the one serving
+  `POST /api/refresh` — which defeats the `_refresh_lock` that's supposed to
+  keep those two off SQLite at the same time.
+
+### Free-tier caveats
+
+Render's free web services are fine for a demo, but worth knowing about:
+
+- **They spin down after 15 minutes without inbound traffic**, and take about
+  a minute to spin back up on the next request. Nothing runs while a service
+  is spun down, so the 60-minute scheduled refresh only fires while someone
+  is actually using the site. In practice this is mostly self-correcting: the
+  scheduler is configured with `next_run_time=datetime.now()`, so a refresh
+  kicks off immediately on every cold start.
+- **The filesystem is ephemeral.** `data/jobs.db` (SQLite) is lost on every
+  redeploy, restart, *and* spin-down, and free services can't attach a
+  [persistent disk](https://render.com/docs/disks). Combined with the point
+  above, that means a cold start serves an empty board for the few seconds it
+  takes the startup refresh to repopulate it. For anything longer-lived,
+  either move to a paid instance with a disk mounted at `data/`, or port
+  `db.py` to [Render Postgres](https://render.com/docs/postgresql).
+- **750 free instance hours per workspace per month.** Spun-down time doesn't
+  count against them.
+- Render may suspend a free service that generates an
+  [unusually high volume of outbound traffic](https://render.com/docs/free#service-initiated-traffic-threshold).
+  This app calls one external ATS API per configured company per refresh, so
+  a sane `REFRESH_INTERVAL_MINUTES` keeps it well clear — just don't set it
+  to something like `1` with a hundred companies configured.
 
 ## Testing
 
@@ -168,7 +204,8 @@ The process itself is good job-search research.
   company on an interval (default 60 min, override with the
   `REFRESH_INTERVAL_MINUTES` env var), so listings stay current even if you
   never touch the button. The frontend also polls every 2 minutes to pick up
-  whatever the background job found.
+  whatever the background job found. (On a free Render instance this only
+  ticks while the service is awake — see [Free-tier caveats](#free-tier-caveats).)
 - **"NEW" badge**: any job first seen in the last 24 hours gets a badge in
   the listing, using the `first_seen_at` timestamp already tracked per job
 - **Applied tracking**: check "Applied" on a row to mark it (persisted in

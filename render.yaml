@@ -1,0 +1,43 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+#
+# To deploy: Render Dashboard -> New -> Blueprint -> pick this repo. Render
+# reads this file and creates the service with everything below already set,
+# so there is nothing to fill in by hand except the optional REFRESH_TOKEN.
+
+services:
+  - type: web
+    name: nz-tech-departures
+    runtime: python
+    plan: free
+    # Closest Render region to New Zealand. Options: oregon / ohio / virginia
+    # / frankfurt / singapore.
+    region: singapore
+    buildCommand: pip install -r requirements.txt
+    # Keep this at 1 worker: app.py starts the APScheduler background job at
+    # import time, so every extra worker process would start its own duplicate
+    # scheduler and trigger duplicate refreshes. The 4 threads let the single
+    # worker keep serving requests (health checks included) while a refresh is
+    # in flight.
+    startCommand: gunicorn app:app --workers 1 --threads 4 --bind 0.0.0.0:$PORT
+    # /api/status only reads the refresh log (and returns nulls on a fresh,
+    # empty database), so it is safe to probe from the very first second.
+    healthCheckPath: /api/status
+    envVars:
+      # Render's Python runtime sets GUNICORN_CMD_ARGS to
+      # "--preload --access-logfile - --bind=0.0.0.0:10000" by default. We
+      # replace that value because of --preload: it makes gunicorn import
+      # app.py in the master process *before* forking the worker, which starts
+      # the scheduler in the master. Threads don't survive fork(), so the
+      # worker would end up with a scheduler that looks running but never
+      # fires, while the master's copy runs refreshes in a different process
+      # from the one serving POST /api/refresh — defeating the _refresh_lock
+      # that is supposed to keep the two off SQLite at the same time.
+      - key: GUNICORN_CMD_ARGS
+        value: --access-logfile -
+      - key: REFRESH_INTERVAL_MINUTES
+        value: "60"
+      # Left blank on purpose: Render prompts for a value when you sync the
+      # Blueprint, and leaving it empty keeps POST /api/refresh open (fine for
+      # a low-traffic demo). See the README for what setting it does.
+      - key: REFRESH_TOKEN
+        sync: false
